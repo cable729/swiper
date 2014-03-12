@@ -1,4 +1,14 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.1'
+    }
+}
+
 apply plugin: 'android'
+apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 19
@@ -19,5 +29,14 @@ android {
 }
 
 dependencies {
+    compile 'com.android.support:support-v4:19.0.1'
+    apt 'org.androidannotations:androidannotations:3.0.1'
+    compile 'org.androidannotations:androidannotations:3.0.1'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+}
+
+apt {
+    arguments {
+        androidManifestFile variant.processResources.manifestFile
+    }
 }
