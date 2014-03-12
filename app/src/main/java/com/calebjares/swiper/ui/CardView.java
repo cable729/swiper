@@ -18,6 +18,7 @@ public class CardView extends RelativeLayout {
     @ViewById(R.id.card_text) TextView text;
     private float clickX;
     private float clickY;
+    private float maxDistance = 400000;
 
     public CardView(Context context) {
         super(context);
@@ -45,11 +46,24 @@ public class CardView extends RelativeLayout {
             case MotionEvent.ACTION_MOVE: {
                 float dx = event.getRawX() - clickX;
                 float dy = event.getRawY() - clickY;
-                ViewPropertyAnimator.animate(this).setDuration(0).translationX(dx).translationY(dy).start();
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);
+                float distanceSquared = dx*dx+dy*dy;
+                float alpha = (maxDistance - distanceSquared) / maxDistance;
+                ViewPropertyAnimator.animate(this)
+                        .setDuration(0)
+                        .translationX(dx)
+                        .translationY(dy)
+                        .alpha(alpha)
+                        .start();
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                ViewPropertyAnimator.animate(this).setDuration(50).translationX(0).translationY(0).start();
+                ViewPropertyAnimator.animate(this)
+                        .setDuration(50)
+                        .translationX(0)
+                        .translationY(0)
+                        .alpha(1)
+                        .start();
                 break;
             }
             case MotionEvent.ACTION_CANCEL: {
