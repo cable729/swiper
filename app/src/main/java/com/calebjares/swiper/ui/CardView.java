@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.calebjares.swiper.R;
 import com.calebjares.swiper.model.Card;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
@@ -15,11 +16,8 @@ import org.androidannotations.annotations.ViewById;
 @EViewGroup(R.layout.view_card)
 public class CardView extends RelativeLayout {
     @ViewById(R.id.card_text) TextView text;
-    private float lastX;
-    private float lastY;
-    private int originalLeftMargin;
-    private int originalTopMargin;
-    private boolean hasSetOriginalMargins;
+    private float clickX;
+    private float clickY;
 
     public CardView(Context context) {
         super(context);
@@ -38,40 +36,26 @@ public class CardView extends RelativeLayout {
     }
 
     @Override public boolean onTouchEvent(MotionEvent event) {
-        RelativeLayout.LayoutParams params = (LayoutParams) this.getLayoutParams();
-        int action = event.getAction();
-        switch (action) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                lastX = event.getRawX();
-                lastY = event.getRawY();
-                if (!hasSetOriginalMargins) {
-                    originalLeftMargin = params.leftMargin;
-                    originalTopMargin = params.topMargin;
-                    hasSetOriginalMargins = true;
-                }
+                clickX = event.getRawX();
+                clickY = event.getRawY();
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-                float dx = event.getRawX() - lastX;
-                float dy = event.getRawY() - lastY;
-                params.leftMargin += dx;
-                params.topMargin += dy;
-                lastX = event.getRawX();
-                lastY = event.getRawY();
+                float dx = event.getRawX() - clickX;
+                float dy = event.getRawY() - clickY;
+                ViewPropertyAnimator.animate(this).setDuration(0).translationX(dx).translationY(dy).start();
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                params.leftMargin = originalLeftMargin;
-                params.topMargin = originalTopMargin;
+                ViewPropertyAnimator.animate(this).setDuration(50).translationX(0).translationY(0).start();
                 break;
             }
             case MotionEvent.ACTION_CANCEL: {
-                params.leftMargin = originalLeftMargin;
-                params.topMargin = originalTopMargin;
                 break;
             }
         }
-        this.setLayoutParams(params);
         return true;
     }
 }
