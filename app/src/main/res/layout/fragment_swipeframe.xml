@@ -8,12 +8,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SwipeFrameFragment"
+    android:id="@+id/swipeframe_container"
     >
 
-    <com.calebjares.swiper.ui.CardView_
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:id="@+id/the_card"
-        />
+    <FrameLayout
+        android:foregroundGravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/stack"
+        >
+        </FrameLayout>
 
 </RelativeLayout>

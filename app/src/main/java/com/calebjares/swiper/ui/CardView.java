@@ -24,6 +24,13 @@ public class CardView extends RelativeLayout {
     private float halfVerticalSreenDistance;
     private float barrierWidth = 60;
     private DisplayMetrics windowSize = new DisplayMetrics();
+    private Card card;
+    private SwipeFrameFragment cardEventListener;
+
+    public CardView(Context context, Card card) {
+        super(context);
+        this.card = card;
+    }
 
     public CardView(Context context) {
         super(context);
@@ -45,10 +52,17 @@ public class CardView extends RelativeLayout {
         float width = (float) windowSize.widthPixels;
         float height = (float) windowSize.heightPixels;
         halfVerticalSreenDistance = (float) (Math.sqrt(width*width + height*height) / 2);
+
+        if (card != null) {
+            this.text.setText(card.text);
+        }
+
+        setAlpha(0);
+        ViewPropertyAnimator.animate(this).setDuration(2000).alpha(100).start();
     }
 
     public void setCard(Card card) {
-        text.setText(card.text);
+        this.card = card;
     }
 
     @Override public boolean onTouchEvent(MotionEvent event) {
@@ -101,14 +115,14 @@ public class CardView extends RelativeLayout {
                     .setDuration(200)
                     .alpha(0)
                     .start();
-            // alert that we just had a no
+            cardEventListener.onNo(card);
         } else if (event.getRawX() >= (float) windowSize.widthPixels - barrierWidth) {
             setEnabled(false);
             ViewPropertyAnimator.animate(this)
                     .setDuration(200)
                     .alpha(0)
                     .start();
-            // alert that we just had a yes
+            cardEventListener.onYes(card);
         } else {
             ViewPropertyAnimator.animate(this)
                     .setDuration(50)
@@ -117,5 +131,18 @@ public class CardView extends RelativeLayout {
                     .alpha(1)
                     .start();
         }
+    }
+
+    public void setCardEventListener(SwipeFrameFragment cardEventListener) {
+        this.cardEventListener = cardEventListener;
+    }
+
+    public SwipeFrameFragment getCardEventListener() {
+        return cardEventListener;
+    }
+
+    public static interface CardEventListener {
+        public abstract void onYes(Card card);
+        public abstract void onNo(Card card);
     }
 }
