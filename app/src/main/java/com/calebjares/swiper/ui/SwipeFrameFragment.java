@@ -1,6 +1,5 @@
 package com.calebjares.swiper.ui;
 
-import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -28,7 +27,6 @@ public class SwipeFrameFragment extends BaseFragment implements CardView.CardEve
         if (cards.hasNext()) {
             CardView card = CardView_.build(getActivity().getBaseContext(), cards.getNext());
             card.setCardEventListener(this);
-            card.setGravity(Gravity.CENTER);
 
             stack.addView(card);
         }
