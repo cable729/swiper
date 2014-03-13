@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+import android.view.animation.OvershootInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -29,7 +30,7 @@ public class CardView extends RelativeLayout {
     private float halfVerticalSreenDistance;
     private DisplayMetrics windowSize = new DisplayMetrics();
     private Card card;
-    private SwipeFrameFragment cardEventListener;
+    private CardEventListener cardEventListener;
     private float absoluteBarrierWidth;
     private float screenWidth;
 
@@ -88,11 +89,10 @@ public class CardView extends RelativeLayout {
                             .setDuration(0)
                             .translationX(dx)
                             .translationY(dy)
-//                            .alpha(alpha)
                             .start();
 
-                    yesText.setAlpha(dx > 0 ? (1 - alpha) * 4 : 0);
-                    noText.setAlpha(dx < 0 ? (1 - alpha) * 4 : 0);
+                    yesText.setAlpha(dx > 0 ? (1 - alpha) * 3 : 0);
+                    noText.setAlpha(dx < 0 ? (1 - alpha) * 3 : 0);
                     break;
                 }
                 case MotionEvent.ACTION_UP: {
@@ -136,20 +136,22 @@ public class CardView extends RelativeLayout {
         } else {
             noText.setAlpha(0);
             yesText.setAlpha(0);
+            float dx = event.getRawX() - clickX;
+            float dy = event.getRawY() - clickY;
             ViewPropertyAnimator.animate(this)
-                    .setDuration(100)
+                    .setDuration(180)
                     .translationX(0)
                     .translationY(0)
-//                    .alpha(1)
+                    .setInterpolator(new OvershootInterpolator())
                     .start();
         }
     }
 
-    public void setCardEventListener(SwipeFrameFragment cardEventListener) {
+    public void setCardEventListener(CardEventListener cardEventListener) {
         this.cardEventListener = cardEventListener;
     }
 
-    public SwipeFrameFragment getCardEventListener() {
+    public CardEventListener getCardEventListener() {
         return cardEventListener;
     }
 
