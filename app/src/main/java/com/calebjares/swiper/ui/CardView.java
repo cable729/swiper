@@ -58,7 +58,7 @@ public class CardView extends RelativeLayout {
         }
 
         setAlpha(0);
-        ViewPropertyAnimator.animate(this).setDuration(2000).alpha(100).start();
+        ViewPropertyAnimator.animate(this).setDuration(1000).alpha(1).start();
     }
 
     public void setCard(Card card) {
