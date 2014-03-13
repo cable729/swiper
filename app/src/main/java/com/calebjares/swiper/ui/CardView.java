@@ -19,10 +19,14 @@ import org.androidannotations.annotations.ViewById;
 @EViewGroup(R.layout.view_card)
 public class CardView extends RelativeLayout {
     @ViewById(R.id.card_text) TextView text;
+    @ViewById(R.id.no_textview) TextView noText;
+    @ViewById(R.id.yes_textview) TextView yesText;
+
+    private static final float BARRIER_WIDTH = 80;
+
     private float clickX;
     private float clickY;
     private float halfVerticalSreenDistance;
-    private float barrierWidth = 60;
     private DisplayMetrics windowSize = new DisplayMetrics();
     private Card card;
     private SwipeFrameFragment cardEventListener;
@@ -83,6 +87,9 @@ public class CardView extends RelativeLayout {
                             .translationY(dy)
                             .alpha(alpha)
                             .start();
+
+                    yesText.setAlpha(dx > 0 ? (1 - alpha) * 4 : 0);
+                    noText.setAlpha(dx < 0 ? (1 - alpha) * 4 : 0);
                     break;
                 }
                 case MotionEvent.ACTION_UP: {
@@ -109,14 +116,14 @@ public class CardView extends RelativeLayout {
     }
 
     void handleDragEnd(MotionEvent event) {
-        if (event.getRawX() <= barrierWidth) {
+        if (event.getRawX() <= BARRIER_WIDTH) {
             setEnabled(false);
             ViewPropertyAnimator.animate(this)
                     .setDuration(200)
                     .alpha(0)
                     .start();
             cardEventListener.onNo(card);
-        } else if (event.getRawX() >= (float) windowSize.widthPixels - barrierWidth) {
+        } else if (event.getRawX() >= (float) windowSize.widthPixels - BARRIER_WIDTH) {
             setEnabled(false);
             ViewPropertyAnimator.animate(this)
                     .setDuration(200)
@@ -124,6 +131,8 @@ public class CardView extends RelativeLayout {
                     .start();
             cardEventListener.onYes(card);
         } else {
+            noText.setAlpha(0);
+            yesText.setAlpha(0);
             ViewPropertyAnimator.animate(this)
                     .setDuration(50)
                     .translationX(0)

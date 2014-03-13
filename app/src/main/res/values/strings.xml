@@ -2,4 +2,7 @@
     <string name="app_name">Swiper</string>
     <string name="font_light">RobotoCondensed-Light.ttf</string>
     <string name="font_regular">RobotoCondensed-Regular.ttf</string>
+    <string name="font_bold">RobotoCondensed-Bold.ttf</string>
+    <string name="no_text">Nope</string>
+    <string name="yes_text">Yeah!</string>
 </resources>

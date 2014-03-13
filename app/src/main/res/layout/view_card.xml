@@ -12,6 +12,31 @@
     >
 
     <com.calebjares.swiper.ui.TypefacedTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        font:typeface="@string/font_bold"
+        android:layout_margin="10dp"
+        android:textSize="28sp"
+        android:textColor="@color/no_color"
+        android:text="@string/no_text"
+        android:id="@+id/no_textview"
+        android:alpha="0"
+        />
+
+    <com.calebjares.swiper.ui.TypefacedTextView
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        font:typeface="@string/font_bold"
+        android:layout_margin="10dp"
+        android:textSize="28sp"
+        android:textColor="@color/yes_color"
+        android:text="@string/yes_text"
+        android:id="@+id/yes_textview"
+        android:alpha="0"
+        />
+
+    <com.calebjares.swiper.ui.TypefacedTextView
         android:layout_marginTop="45sp"
         android:layout_marginLeft="30sp"
         android:layout_marginRight="30sp"

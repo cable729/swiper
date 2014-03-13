@@ -2,4 +2,6 @@
 <resources>
     <color name="card_background">#eee</color>
     <color name="card_border">#555</color>
+    <color name="no_color">#a00</color>
+    <color name="yes_color">#458B00</color>
 </resources>
