@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -91,8 +92,9 @@ public class CardView extends RelativeLayout {
                             .translationY(dy)
                             .start();
 
-                    yesText.setAlpha(dx > 0 ? (1 - alpha) * 3 : 0);
-                    noText.setAlpha(dx < 0 ? (1 - alpha) * 3 : 0);
+                    float textAlpha = dx / (screenWidth / 2 - absoluteBarrierWidth);
+                    yesText.setAlpha(dx > 0 ? textAlpha : 0);
+                    noText.setAlpha(dx < 0 ? -textAlpha : 0);
                     break;
                 }
                 case MotionEvent.ACTION_UP: {
@@ -122,15 +124,17 @@ public class CardView extends RelativeLayout {
         if (event.getRawX() <= absoluteBarrierWidth) {
             setEnabled(false);
             ViewPropertyAnimator.animate(this)
-                    .setDuration(100)
+                    .setDuration(200)
                     .translationX(-screenWidth)
+                    .setInterpolator(new AccelerateInterpolator())
                     .start();
             cardEventListener.onNo(card);
         } else if (event.getRawX() >= (float) windowSize.widthPixels - absoluteBarrierWidth) {
             setEnabled(false);
             ViewPropertyAnimator.animate(this)
-                    .setDuration(100)
+                    .setDuration(200)
                     .translationX(screenWidth)
+                    .setInterpolator(new AccelerateInterpolator())
                     .start();
             cardEventListener.onYes(card);
         } else {

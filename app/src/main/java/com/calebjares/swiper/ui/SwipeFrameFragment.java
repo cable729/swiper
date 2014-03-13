@@ -1,7 +1,6 @@
 package com.calebjares.swiper.ui;
 
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.calebjares.swiper.R;
 import com.calebjares.swiper.model.Card;
@@ -37,12 +36,10 @@ public class SwipeFrameFragment extends BaseFragment implements CardView.CardEve
     }
 
     @Override public void onYes(Card card) {
-        Toast.makeText(getActivity().getBaseContext(), "Congratulations, we're glad!", Toast.LENGTH_SHORT).show();
         addCard();
     }
 
     @Override public void onNo(Card card) {
-        Toast.makeText(getActivity().getBaseContext(), "No problem!", Toast.LENGTH_SHORT).show();
         addCard();
     }
 }
