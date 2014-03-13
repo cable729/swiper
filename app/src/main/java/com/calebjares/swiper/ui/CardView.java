@@ -22,7 +22,7 @@ public class CardView extends RelativeLayout {
     @ViewById(R.id.no_textview) TextView noText;
     @ViewById(R.id.yes_textview) TextView yesText;
 
-    private static final float BARRIER_WIDTH = 80;
+    private static final float BARRIER_WIDTH = 1f/5f;
 
     private float clickX;
     private float clickY;
@@ -30,6 +30,8 @@ public class CardView extends RelativeLayout {
     private DisplayMetrics windowSize = new DisplayMetrics();
     private Card card;
     private SwipeFrameFragment cardEventListener;
+    private float absoluteBarrierWidth;
+    private float screenWidth;
 
     public CardView(Context context, Card card) {
         super(context);
@@ -53,16 +55,17 @@ public class CardView extends RelativeLayout {
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(windowSize);
 
-        float width = (float) windowSize.widthPixels;
+        screenWidth = (float) windowSize.widthPixels;
         float height = (float) windowSize.heightPixels;
-        halfVerticalSreenDistance = (float) (Math.sqrt(width*width + height*height) / 2);
+        halfVerticalSreenDistance = (float) (Math.sqrt(screenWidth*screenWidth + height*height) / 2);
+        absoluteBarrierWidth = screenWidth * BARRIER_WIDTH;
 
         if (card != null) {
             this.text.setText(card.text);
         }
 
         setAlpha(0);
-        ViewPropertyAnimator.animate(this).setDuration(1000).alpha(1).start();
+        ViewPropertyAnimator.animate(this).setDuration(500).alpha(1).start();
     }
 
     public void setCard(Card card) {
@@ -85,7 +88,7 @@ public class CardView extends RelativeLayout {
                             .setDuration(0)
                             .translationX(dx)
                             .translationY(dy)
-                            .alpha(alpha)
+//                            .alpha(alpha)
                             .start();
 
                     yesText.setAlpha(dx > 0 ? (1 - alpha) * 4 : 0);
@@ -116,28 +119,28 @@ public class CardView extends RelativeLayout {
     }
 
     void handleDragEnd(MotionEvent event) {
-        if (event.getRawX() <= BARRIER_WIDTH) {
+        if (event.getRawX() <= absoluteBarrierWidth) {
             setEnabled(false);
             ViewPropertyAnimator.animate(this)
-                    .setDuration(200)
-                    .alpha(0)
+                    .setDuration(100)
+                    .translationX(-screenWidth)
                     .start();
             cardEventListener.onNo(card);
-        } else if (event.getRawX() >= (float) windowSize.widthPixels - BARRIER_WIDTH) {
+        } else if (event.getRawX() >= (float) windowSize.widthPixels - absoluteBarrierWidth) {
             setEnabled(false);
             ViewPropertyAnimator.animate(this)
-                    .setDuration(200)
-                    .alpha(0)
+                    .setDuration(100)
+                    .translationX(screenWidth)
                     .start();
             cardEventListener.onYes(card);
         } else {
             noText.setAlpha(0);
             yesText.setAlpha(0);
             ViewPropertyAnimator.animate(this)
-                    .setDuration(50)
+                    .setDuration(100)
                     .translationX(0)
                     .translationY(0)
-                    .alpha(1)
+//                    .alpha(1)
                     .start();
         }
     }
