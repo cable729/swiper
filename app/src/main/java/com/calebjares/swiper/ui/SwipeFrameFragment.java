@@ -1,11 +1,8 @@
 package com.calebjares.swiper.ui;
 
-import android.widget.RelativeLayout;
-
 import com.calebjares.swiper.R;
 import com.calebjares.swiper.model.Card;
 import com.calebjares.swiper.provider.CardProvider;
-import com.calebjares.swiper.util.ScreenMetricUtil;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -16,25 +13,20 @@ import javax.inject.Inject;
 @EFragment(R.layout.fragment_swipeframe)
 public class SwipeFrameFragment extends BaseFragment implements CardView.CardEventListener {
     @Inject CardProvider cards;
-    @ViewById(R.id.swipeframe_container) RelativeLayout container;
+    @ViewById(R.id.swipeframe_container) CardStackView cardStackView;
 
     @AfterViews
     void setup() {
+        cardStackView.setListener(this);
         addCard();
     }
 
-    private void addCard() {
+    private boolean addCard() {
         if (cards.hasNext()) {
-            CardView card = CardView_.build(getActivity().getBaseContext(), cards.getNext());
-            card.setCardEventListener(this);
-
-            int size = ScreenMetricUtil.convertPixelToDp(getActivity().getBaseContext(), 300);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size);
-            params.addRule(RelativeLayout.CENTER_IN_PARENT);
-            card.setLayoutParams(params);
-
-            container.addView(card);
+            cardStackView.pushCard(cards.getNext());
+            return true;
         }
+        return false;
     }
 
     @Override public void onPause() {

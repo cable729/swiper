@@ -70,10 +70,6 @@ public class CardView extends RelativeLayout {
         ViewPropertyAnimator.animate(this).setDuration(500).alpha(1).start();
     }
 
-    public void setCard(Card card) {
-        this.card = card;
-    }
-
     @Override public boolean onTouchEvent(MotionEvent event) {
         if (isEnabled()) {
             switch (event.getAction()) {
@@ -128,7 +124,7 @@ public class CardView extends RelativeLayout {
                     .translationX(-screenWidth)
                     .setInterpolator(new AccelerateInterpolator())
                     .start();
-            cardEventListener.onNo(card);
+            if (cardEventListener != null) cardEventListener.onNo(card);
         } else if (event.getRawX() >= (float) windowSize.widthPixels - absoluteBarrierWidth) {
             setEnabled(false);
             ViewPropertyAnimator.animate(this)
@@ -136,7 +132,7 @@ public class CardView extends RelativeLayout {
                     .translationX(screenWidth)
                     .setInterpolator(new AccelerateInterpolator())
                     .start();
-            cardEventListener.onYes(card);
+            if (cardEventListener != null) cardEventListener.onYes(card);
         } else {
             noText.setAlpha(0);
             yesText.setAlpha(0);

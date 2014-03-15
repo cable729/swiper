@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
+<com.calebjares.swiper.ui.CardStackView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="center"
@@ -10,6 +10,4 @@
     android:layout_height="match_parent"
     tools:context=".SwipeFrameFragment"
     android:id="@+id/swipeframe_container"
-    >
-
-</RelativeLayout>
+    />
