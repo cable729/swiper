@@ -18,6 +18,8 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EViewGroup;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.ArrayList;
+
 @EViewGroup(R.layout.view_card)
 public class CardView extends RelativeLayout {
     @ViewById(R.id.card_text) TextView text;
@@ -31,7 +33,7 @@ public class CardView extends RelativeLayout {
     private float halfVerticalSreenDistance;
     private DisplayMetrics windowSize = new DisplayMetrics();
     private Card card;
-    private CardEventListener cardEventListener;
+    private ArrayList<CardEventListener> cardEventListeners = new ArrayList<CardEventListener>();
     private float absoluteBarrierWidth;
     private float screenWidth;
 
@@ -65,9 +67,6 @@ public class CardView extends RelativeLayout {
         if (card != null) {
             this.text.setText(card.text);
         }
-
-        setAlpha(0);
-        ViewPropertyAnimator.animate(this).setDuration(500).alpha(1).start();
     }
 
     @Override public boolean onTouchEvent(MotionEvent event) {
@@ -124,7 +123,7 @@ public class CardView extends RelativeLayout {
                     .translationX(-screenWidth)
                     .setInterpolator(new AccelerateInterpolator())
                     .start();
-            if (cardEventListener != null) cardEventListener.onNo(card);
+            notifyCardEventListenersOfYes(card);
         } else if (event.getRawX() >= (float) windowSize.widthPixels - absoluteBarrierWidth) {
             setEnabled(false);
             ViewPropertyAnimator.animate(this)
@@ -132,7 +131,7 @@ public class CardView extends RelativeLayout {
                     .translationX(screenWidth)
                     .setInterpolator(new AccelerateInterpolator())
                     .start();
-            if (cardEventListener != null) cardEventListener.onYes(card);
+            notifyCardEventListenersOfYes(card);
         } else {
             noText.setAlpha(0);
             yesText.setAlpha(0);
@@ -147,12 +146,20 @@ public class CardView extends RelativeLayout {
         }
     }
 
-    public void setCardEventListener(CardEventListener cardEventListener) {
-        this.cardEventListener = cardEventListener;
+    private void notifyCardEventListenersOfYes(Card card) {
+        for (CardEventListener eventListener : cardEventListeners) {
+            eventListener.onYes(card);
+        }
     }
 
-    public CardEventListener getCardEventListener() {
-        return cardEventListener;
+    private void notifyCardEventListenersOfNo(Card card) {
+        for (CardEventListener eventListener : cardEventListeners) {
+            eventListener.onNo(card);
+        }
+    }
+
+    public void addCardEventListener(CardEventListener cardEventListener) {
+        cardEventListeners.add(cardEventListener);
     }
 
     public static interface CardEventListener {

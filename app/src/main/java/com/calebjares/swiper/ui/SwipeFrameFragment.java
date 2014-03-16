@@ -1,8 +1,9 @@
 package com.calebjares.swiper.ui;
 
 import com.calebjares.swiper.R;
+import com.calebjares.swiper.logic.CardProvider;
+import com.calebjares.swiper.logic.CardStackFullMaintainer;
 import com.calebjares.swiper.model.Card;
-import com.calebjares.swiper.provider.CardProvider;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -13,20 +14,14 @@ import javax.inject.Inject;
 @EFragment(R.layout.fragment_swipeframe)
 public class SwipeFrameFragment extends BaseFragment implements CardView.CardEventListener {
     @Inject CardProvider cards;
+    @Inject CardStackFullMaintainer maintainer;
     @ViewById(R.id.swipeframe_container) CardStackView cardStackView;
 
     @AfterViews
     void setup() {
-        cardStackView.setListener(this);
-        addCard();
-    }
-
-    private boolean addCard() {
-        if (cards.hasNext()) {
-            cardStackView.pushCard(cards.getNext());
-            return true;
-        }
-        return false;
+        cardStackView.setCardEventListener(this);
+        cardStackView.setLifetimeListener(maintainer);
+        maintainer.onCardStackCountChange(cardStackView);
     }
 
     @Override public void onPause() {
@@ -34,10 +29,8 @@ public class SwipeFrameFragment extends BaseFragment implements CardView.CardEve
     }
 
     @Override public void onYes(Card card) {
-        addCard();
     }
 
     @Override public void onNo(Card card) {
-        addCard();
     }
 }

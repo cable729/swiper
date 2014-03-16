@@ -1,4 +1,4 @@
-package com.calebjares.swiper.provider;
+package com.calebjares.swiper.logic;
 
 import com.calebjares.swiper.model.Card;
 
