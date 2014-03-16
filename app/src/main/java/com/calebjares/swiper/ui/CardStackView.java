@@ -15,7 +15,9 @@ import java.util.Stack;
 public class CardStackView extends RelativeLayout implements CardView.CardEventListener {
     CardView.CardEventListener cardEventListener;
     ArrayList<CardStackLifetimeListener> lifetimeListeners = new ArrayList<CardStackLifetimeListener>();
-    Stack<View> viewStack = new Stack<View>();
+    Stack<CardView> viewStack = new Stack<CardView>();
+
+    int numFinishing = 0;
 
     public static final int CARD_SIZE = 300;
 
@@ -29,10 +31,6 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
 
     public CardStackView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-    }
-
-    public void pushCard(Card card) {
-        pushCardsUnder(card);
     }
 
     private void notifyLifetimeListenersOnStackCountChange() {
@@ -55,6 +53,7 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
             }
             cardViews[i].addCardEventListener(this);
             cardViews[i].setLayoutParams(getCardViewLayoutParams());
+            cardViews[i].setVisibility(GONE);
         }
 
         for (int i = 0; i < cards.length; i++) {
@@ -65,7 +64,20 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
         for (View view : viewStack) {
             view.bringToFront();
         }
+        setTopThreeCardsVisible();
         notifyLifetimeListenersOnStackCountChange();
+    }
+
+    private void setTopThreeCardsVisible() {
+        if (viewStack.size() > 0) {
+            viewStack.get(viewStack.size() - 1).setVisibility(VISIBLE);
+        }
+        if (viewStack.size() > 1) {
+            viewStack.get(viewStack.size() - 2).setVisibility(VISIBLE);
+        }
+        if (viewStack.size() > 2) {
+            viewStack.get(viewStack.size() - 3).setVisibility(VISIBLE);
+        }
     }
 
     private LayoutParams getCardViewLayoutParams() {
@@ -77,8 +89,20 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
 
     public void popCard() {
         View pop = viewStack.pop();
+        numFinishing--;
+        setTopThreeCardsVisible();
         this.removeView(pop);
         notifyLifetimeListenersOnStackCountChange();
+    }
+
+    public boolean popCardIfOnTop(Card card) {
+        CardView topCard = viewStack.get(viewStack.size() - 1);
+        if (topCard.getCard().equals(card)) {
+            numFinishing--;
+            popCard();
+            return true;
+        }
+        return false;
     }
 
     public int getStackSize() {
@@ -97,9 +121,19 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
         lifetimeListeners.add(lifetimeListener);
     }
 
-    @Override public void onYes(Card card) { }
-    @Override public void onNo(Card card) { }
+    private void onFinishing() {
+        if (++numFinishing > 1) {
+            popCard();
+        }
+    }
+
+    @Override public void onYes(Card card) {
+        onFinishing();
+    }
+    @Override public void onNo(Card card) {
+        onFinishing();
+    }
     @Override public void onFinish(Card card) {
-        popCard();
+        popCardIfOnTop(card);
     }
 }

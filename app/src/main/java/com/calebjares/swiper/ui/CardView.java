@@ -33,7 +33,6 @@ public class CardView extends RelativeLayout implements Animator.AnimatorListene
 
     private float clickX;
     private float clickY;
-    private float halfVerticalSreenDistance;
     private DisplayMetrics windowSize = new DisplayMetrics();
     private Card card;
     private ArrayList<CardEventListener> cardEventListeners = new ArrayList<CardEventListener>();
@@ -57,14 +56,16 @@ public class CardView extends RelativeLayout implements Animator.AnimatorListene
         super(context, attrs, defStyle);
     }
 
+    public Card getCard() {
+        return card;
+    }
+
     @AfterViews
     void init() {
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(windowSize);
 
         screenWidth = (float) windowSize.widthPixels;
-        float height = (float) windowSize.heightPixels;
-        halfVerticalSreenDistance = (float) (Math.sqrt(screenWidth*screenWidth + height*height) / 2);
         absoluteBarrierWidth = screenWidth * BARRIER_WIDTH;
 
         if (card != null) {
@@ -76,6 +77,8 @@ public class CardView extends RelativeLayout implements Animator.AnimatorListene
         if (isEnabled()) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN: {
+                    noText.setVisibility(VISIBLE);
+                    yesText.setVisibility(VISIBLE);
                     clickX = event.getRawX();
                     clickY = event.getRawY();
                     break;
@@ -112,34 +115,31 @@ public class CardView extends RelativeLayout implements Animator.AnimatorListene
         return true;
     }
 
-    float calculateAlpha(float dx, float dy) {
-        double distance = Math.sqrt(dx * dx + dy * dy);
-
-        return (halfVerticalSreenDistance - (float) distance) / halfVerticalSreenDistance;
-    }
-
     private void animateOut(float amount) {
         ValueAnimator a = ObjectAnimator.ofFloat(this, "translationX", amount);
-        a.setDuration(250);
+        a.setDuration(150);
         a.addListener(this);
         a.setInterpolator(new AccelerateInterpolator());
         a.start();
-
     }
 
     void handleDragEnd(MotionEvent event) {
         if (isEnabled()) {
             if (event.getRawX() <= absoluteBarrierWidth) {
                 setEnabled(false);
+                yesText.setVisibility(GONE);
+                noText.setAlpha(1);
                 animateOut(-screenWidth);
                 notifyCardEventListenersOfNo(card);
             } else if (event.getRawX() >= (float) windowSize.widthPixels - absoluteBarrierWidth) {
                 setEnabled(false);
+                noText.setVisibility(GONE);
+                yesText.setAlpha(1);
                 animateOut(screenWidth);
                 notifyCardEventListenersOfYes(card);
             } else {
-                noText.setAlpha(0);
-                yesText.setAlpha(0);
+                noText.setVisibility(GONE);
+                yesText.setVisibility(GONE);
 
                 ViewPropertyAnimator.animate(this)
                         .setDuration(200)
