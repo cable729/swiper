@@ -3,6 +3,7 @@ package com.calebjares.swiper.ui;
 import android.view.View;
 
 import com.calebjares.swiper.R;
+import com.calebjares.swiper.SwiperApp;
 import com.calebjares.swiper.logic.CardProvider;
 import com.calebjares.swiper.logic.CardStackFullMaintainer;
 import com.calebjares.swiper.logic.CardStackLifetimeListener;
@@ -26,16 +27,13 @@ public class SwipeFrameFragment extends BaseFragment implements CardView.CardEve
 
     @AfterViews
     void setup() {
+        SwiperApp.getGraph().inject(this);
         cardStackView.setCardEventListener(this);
         cardStackView.addLifetimeListeners(maintainer);
         cardStackView.addLifetimeListeners(this);
         maintainer.onCardStackCountChange(cardStackView);
     }
-
-    @Override public void onPause() {
-        super.onPause();
-    }
-
+    
     @Override public void onYes(Card card) {
     }
 
