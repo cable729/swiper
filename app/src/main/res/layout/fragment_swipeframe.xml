@@ -1,13 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.calebjares.swiper.ui.CardStackView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_gravity="center"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
+    xmlns:text="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
-    tools:context=".SwipeFrameFragment"
-    android:id="@+id/swipeframe_container"
-    />
+    android:layout_width="match_parent">
+
+    <com.calebjares.swiper.ui.CardStackView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".SwipeFrameFragment"
+        android:id="@+id/swipeframe_container"
+        />
+
+    <LinearLayout
+        android:id="@+id/loading_frame"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+            <com.calebjares.swiper.ui.TypefacedTextView
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_width="260sp"
+                android:layout_height="wrap_content"
+                text:typeface="@string/font_light"
+                android:text="We're loading your cards right now!"/>
+
+            <ProgressBar
+                android:id="@+id/loading_bar"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/out_of_cards_frame"
+        android:visibility="gone"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.calebjares.swiper.ui.TypefacedTextView
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="260sp"
+            android:layout_height="wrap_content"
+            text:typeface="@string/font_light"
+            android:text="Looks like you're out of cards. Come back later!"/>
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -9,11 +9,12 @@ import com.calebjares.swiper.logic.CardStackLifetimeListener;
 import com.calebjares.swiper.model.Card;
 import com.calebjares.swiper.util.ScreenMetricUtil;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class CardStackView extends RelativeLayout implements CardView.CardEventListener {
     CardView.CardEventListener cardEventListener;
-    CardStackLifetimeListener lifetimeListener;
+    ArrayList<CardStackLifetimeListener> lifetimeListeners = new ArrayList<CardStackLifetimeListener>();
     Stack<View> viewStack = new Stack<View>();
 
     public static final int CARD_SIZE = 300;
@@ -34,16 +35,24 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
         pushCardsUnder(card);
     }
 
+    private void notifyLifetimeListenersOnStackCountChange() {
+        for (CardStackLifetimeListener lifetimeListener : lifetimeListeners) {
+            lifetimeListener.onCardStackCountChange(this);
+        }
+    }
+
     @Override protected void onFinishInflate() {
         super.onFinishInflate();
-        if (lifetimeListener != null) lifetimeListener.onCardStackCountChange(this);
+        notifyLifetimeListenersOnStackCountChange();
     }
 
     public void pushCardsUnder(Card... cards) {
         CardView[] cardViews = new CardView[cards.length];
         for (int i = 0; i < cards.length; i++) {
             cardViews[i] = CardView_.build(getContext(), cards[i]);
-            cardViews[i].addCardEventListener(getCardEventListener());
+            if (cardEventListener != null) {
+                cardViews[i].addCardEventListener(getCardEventListener());
+            }
             cardViews[i].addCardEventListener(this);
             cardViews[i].setLayoutParams(getCardViewLayoutParams());
         }
@@ -56,7 +65,7 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
         for (View view : viewStack) {
             view.bringToFront();
         }
-        if (lifetimeListener != null) lifetimeListener.onCardStackCountChange(this);
+        notifyLifetimeListenersOnStackCountChange();
     }
 
     private LayoutParams getCardViewLayoutParams() {
@@ -69,7 +78,7 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
     public void popCard() {
         View pop = viewStack.pop();
         this.removeView(pop);
-        if (lifetimeListener != null) lifetimeListener.onCardStackCountChange(this);
+        notifyLifetimeListenersOnStackCountChange();
     }
 
     public int getStackSize() {
@@ -84,12 +93,8 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
         this.cardEventListener = cardEventListener;
     }
 
-    public CardStackLifetimeListener getLifetimeListener() {
-        return lifetimeListener;
-    }
-
-    public void setLifetimeListener(CardStackLifetimeListener lifetimeListener) {
-        this.lifetimeListener = lifetimeListener;
+    public void addLifetimeListeners(CardStackLifetimeListener lifetimeListener) {
+        lifetimeListeners.add(lifetimeListener);
     }
 
     @Override public void onYes(Card card) {
