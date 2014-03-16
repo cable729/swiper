@@ -97,11 +97,9 @@ public class CardStackView extends RelativeLayout implements CardView.CardEventL
         lifetimeListeners.add(lifetimeListener);
     }
 
-    @Override public void onYes(Card card) {
-        popCard();
-    }
-
-    @Override public void onNo(Card card) {
+    @Override public void onYes(Card card) { }
+    @Override public void onNo(Card card) { }
+    @Override public void onFinish(Card card) {
         popCard();
     }
 }

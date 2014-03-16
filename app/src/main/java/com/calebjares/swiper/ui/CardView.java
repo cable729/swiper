@@ -12,6 +12,9 @@ import android.widget.TextView;
 
 import com.calebjares.swiper.R;
 import com.calebjares.swiper.model.Card;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import org.androidannotations.annotations.AfterViews;
@@ -21,7 +24,7 @@ import org.androidannotations.annotations.ViewById;
 import java.util.ArrayList;
 
 @EViewGroup(R.layout.view_card)
-public class CardView extends RelativeLayout {
+public class CardView extends RelativeLayout implements Animator.AnimatorListener {
     @ViewById(R.id.card_text) TextView text;
     @ViewById(R.id.no_textview) TextView noText;
     @ViewById(R.id.yes_textview) TextView yesText;
@@ -80,7 +83,7 @@ public class CardView extends RelativeLayout {
                 case MotionEvent.ACTION_MOVE: {
                     float dx = event.getRawX() - clickX;
                     float dy = event.getRawY() - clickY;
-                    float alpha = calculateAlpha(dx, dy);
+
                     ViewPropertyAnimator.animate(this)
                             .setDuration(0)
                             .translationX(dx)
@@ -115,34 +118,36 @@ public class CardView extends RelativeLayout {
         return (halfVerticalSreenDistance - (float) distance) / halfVerticalSreenDistance;
     }
 
+    private void animateOut(float amount) {
+        ValueAnimator a = ObjectAnimator.ofFloat(this, "translationX", amount);
+        a.setDuration(250);
+        a.addListener(this);
+        a.setInterpolator(new AccelerateInterpolator());
+        a.start();
+
+    }
+
     void handleDragEnd(MotionEvent event) {
-        if (event.getRawX() <= absoluteBarrierWidth) {
-            setEnabled(false);
-            ViewPropertyAnimator.animate(this)
-                    .setDuration(200)
-                    .translationX(-screenWidth)
-                    .setInterpolator(new AccelerateInterpolator())
-                    .start();
-            notifyCardEventListenersOfYes(card);
-        } else if (event.getRawX() >= (float) windowSize.widthPixels - absoluteBarrierWidth) {
-            setEnabled(false);
-            ViewPropertyAnimator.animate(this)
-                    .setDuration(200)
-                    .translationX(screenWidth)
-                    .setInterpolator(new AccelerateInterpolator())
-                    .start();
-            notifyCardEventListenersOfYes(card);
-        } else {
-            noText.setAlpha(0);
-            yesText.setAlpha(0);
-            float dx = event.getRawX() - clickX;
-            float dy = event.getRawY() - clickY;
-            ViewPropertyAnimator.animate(this)
-                    .setDuration(180)
-                    .translationX(0)
-                    .translationY(0)
-                    .setInterpolator(new OvershootInterpolator())
-                    .start();
+        if (isEnabled()) {
+            if (event.getRawX() <= absoluteBarrierWidth) {
+                setEnabled(false);
+                animateOut(-screenWidth);
+                notifyCardEventListenersOfNo(card);
+            } else if (event.getRawX() >= (float) windowSize.widthPixels - absoluteBarrierWidth) {
+                setEnabled(false);
+                animateOut(screenWidth);
+                notifyCardEventListenersOfYes(card);
+            } else {
+                noText.setAlpha(0);
+                yesText.setAlpha(0);
+
+                ViewPropertyAnimator.animate(this)
+                        .setDuration(200)
+                        .translationX(0)
+                        .translationY(0)
+                        .setInterpolator(new OvershootInterpolator())
+                        .start();
+            }
         }
     }
 
@@ -162,8 +167,20 @@ public class CardView extends RelativeLayout {
         cardEventListeners.add(cardEventListener);
     }
 
+    @Override public void onAnimationEnd(Animator animation) {
+        if (!isEnabled()) {
+            for (CardEventListener eventListener : cardEventListeners) {
+                eventListener.onFinish(card);
+            }
+        }
+    }
+    @Override public void onAnimationStart(Animator animation) { }
+    @Override public void onAnimationCancel(Animator animation) { }
+    @Override public void onAnimationRepeat(Animator animation) { }
+
     public static interface CardEventListener {
         public abstract void onYes(Card card);
         public abstract void onNo(Card card);
+        public abstract void onFinish(Card card);
     }
 }
