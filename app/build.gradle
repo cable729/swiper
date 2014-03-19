@@ -31,6 +31,7 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:19.0.1'
     compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.squareup.retrofit:retrofit:1.4.1'
 
     apt 'org.androidannotations:androidannotations:3.0.1'
     compile 'org.androidannotations:androidannotations:3.0.1'
