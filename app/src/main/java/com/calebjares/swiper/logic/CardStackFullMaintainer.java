@@ -1,45 +1,37 @@
 package com.calebjares.swiper.logic;
 
+import android.os.AsyncTask;
+
 import com.calebjares.swiper.model.Card;
 import com.calebjares.swiper.ui.CardStackView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 public class CardStackFullMaintainer implements CardStackLifetimeListener {
 
-    private final CardStackMaintainerParams params;
-    private final CardProvider cardProvider;
+    public static final int MIN_CARDS = 3;
+    public static final int FETCH_AMOUNT = 5;
+    private final BulkCardProvider cardProvider;
 
-    @Inject public CardStackFullMaintainer(CardStackMaintainerParams params, CardProvider cardProvider){
-        this.params = params;
+    @Inject public CardStackFullMaintainer(BulkCardProvider cardProvider) {
         this.cardProvider = cardProvider;
     }
 
-    @Override public void onCardStackCountChange(CardStackView cardStackView) {
-        if (cardStackView.getStackSize() < params.minAmount) {
-            ArrayList<Card> fetchedCards = new ArrayList<Card>();
-            for (int i = 0; i < params.fetchAmount && cardProvider.hasNext(); i++) {
-                fetchedCards.add(cardProvider.getNext());
-            }
+    @Override public void onCardStackCountChange(final CardStackView cardStackView) {
+        if (cardStackView.getStackSize() < MIN_CARDS) {
+            AsyncTask<Integer, Void, List<Card>> task = new AsyncTask<Integer, Void, List<Card>>() {
+                @Override protected List<Card> doInBackground(Integer... ints) {
+                    return cardProvider.getCards(ints[0]);
+                }
 
-            if (!fetchedCards.isEmpty()) {
-                Card[] cards = new Card[fetchedCards.size()];
-                fetchedCards.toArray(cards);
-
-                cardStackView.pushCardsUnder(cards);
-            }
-        }
-    }
-
-    public static class CardStackMaintainerParams {
-        private final int minAmount;
-        private final int fetchAmount;
-
-        public CardStackMaintainerParams(int fetchAmount, int minAmount) {
-            this.fetchAmount = fetchAmount;
-            this.minAmount = minAmount;
+                @Override protected void onPostExecute(List<Card> cards) {
+                    super.onPostExecute(cards);
+                    cardStackView.pushCardsUnder(cards.toArray(new Card[cards.size()]));
+                }
+            };
+            task.execute(FETCH_AMOUNT);
         }
     }
 }

@@ -1,9 +1,9 @@
 package com.calebjares.swiper;
 
-import com.calebjares.swiper.logic.CardProvider;
+import com.calebjares.swiper.logic.BulkCardProvider;
 import com.calebjares.swiper.logic.CardStackFullMaintainer;
-import com.calebjares.swiper.logic.MockCardProvider;
-import com.calebjares.swiper.rest.ServeitRestWrapper;
+import com.calebjares.swiper.logic.ServeItCardProvider;
+import com.calebjares.swiper.rest.ServeItRestWrapper;
 import com.calebjares.swiper.ui.SwipeFrameFragment_;
 
 import dagger.Module;
@@ -14,26 +14,23 @@ import retrofit.RestAdapter;
         injects = {
                 SwipeFrameFragment_.class,
 
-                CardProvider.class,
+                BulkCardProvider.class,
                 CardStackFullMaintainer.class,
-                ServeitRestWrapper.class
+                ServeItRestWrapper.class
         }
 )
 public class SwiperModule {
-    @Provides CardStackFullMaintainer.CardStackMaintainerParams providesCardStackMaintainerParams() {
-        return new CardStackFullMaintainer.CardStackMaintainerParams(5, 3);
+    @Provides BulkCardProvider providesCardProvider(ServeItRestWrapper api) {
+        return new ServeItCardProvider(api);
     }
-    @Provides CardProvider providesCardProvider() {
-        return new MockCardProvider();
-    }
-    @Provides ServeitRestWrapper providesServeitRestWrapper() {
+    @Provides ServeItRestWrapper providesServeitRestWrapper() {
         String endpoint = "http://swipeit.me/api/v1";
         if (BuildConfig.DEBUG) {
-            endpoint = "http://localhost:3000/api/v1";
+            endpoint = "http://192.168.56.1:3000/api/v1";
         }
         return new RestAdapter.Builder()
                 .setEndpoint(endpoint)
                 .build()
-                .create(ServeitRestWrapper.class);
+                .create(ServeItRestWrapper.class);
     }
 }

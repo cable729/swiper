@@ -3,7 +3,6 @@ package com.calebjares.swiper.ui;
 import android.view.View;
 
 import com.calebjares.swiper.R;
-import com.calebjares.swiper.logic.CardProvider;
 import com.calebjares.swiper.logic.CardStackFullMaintainer;
 import com.calebjares.swiper.logic.CardStackLifetimeListener;
 
@@ -15,7 +14,6 @@ import javax.inject.Inject;
 
 @EFragment(R.layout.fragment_swipeframe)
 public class SwipeFrameFragment extends BaseFragment implements CardStackLifetimeListener {
-    @Inject CardProvider cards;
     @Inject CardStackFullMaintainer maintainer;
     @ViewById(R.id.swipeframe_container) CardStackView cardStackView;
     @ViewById(R.id.loading_frame) View loadingFrame;
