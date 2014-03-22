@@ -29,9 +29,15 @@ android {
 }
 
 dependencies {
+    repositories {
+        mavenCentral()
+        maven { url 'https://github.com/novoda/public-mvn-repo/raw/master/releases' }
+    }
+
     compile 'com.android.support:support-v4:19.0.1'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.squareup.retrofit:retrofit:1.4.1'
+    compile 'com.novoda.location:novocation-core:1.0.8'
 
     apt 'org.androidannotations:androidannotations:3.0.1'
     compile 'org.androidannotations:androidannotations:3.0.1'

@@ -5,6 +5,9 @@ import com.calebjares.swiper.logic.CardStackFullMaintainer;
 import com.calebjares.swiper.logic.ServeItCardProvider;
 import com.calebjares.swiper.rest.ServeItRestWrapper;
 import com.calebjares.swiper.ui.SwipeFrameFragment_;
+import com.novoda.location.Locator;
+import com.novoda.location.LocatorFactory;
+import com.novoda.location.LocatorSettings;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,6 +17,7 @@ import retrofit.RestAdapter;
         injects = {
                 SwipeFrameFragment_.class,
 
+                Locator.class,
                 BulkCardProvider.class,
                 CardStackFullMaintainer.class,
                 ServeItRestWrapper.class
@@ -33,4 +37,15 @@ public class SwiperModule {
                 .build()
                 .create(ServeItRestWrapper.class);
     }
+    @Provides Locator providesLocator() {
+        LocatorSettings settings = new LocatorSettings("com.powderhook.blackbear", LOCATION_UPDATE_ACTION);
+        settings.setUpdatesInterval(3 * 60 * 1000);
+        settings.setUpdatesDistance(50);
+
+        Locator instance = LocatorFactory.getInstance();
+        instance.prepare(SwiperApp.getAppContext(), settings);
+        return instance;
+    }
+
+    public static final String LOCATION_UPDATE_ACTION = "location.update.action";
 }
